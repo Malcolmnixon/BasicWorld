@@ -65,3 +65,7 @@ crashlytics-build.properties
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
+
+# Additional libraries
+Assets/Libraries/*.dll
+Assets/Libraries/*.dll.meta
