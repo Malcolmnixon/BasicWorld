@@ -25,14 +25,14 @@ public class WorldController : MonoBehaviour
     [SerializeField]
     public GameObject  MonsterPrefab;
 
-    private GameObject Player;
+    private GameObject _player;
 
 
-    private Dictionary<Guid, GameObject> RemotePlayers = new Dictionary<Guid, GameObject>();
+    private readonly Dictionary<Guid, GameObject> _remotePlayers = new Dictionary<Guid, GameObject>();
 
-    private Dictionary<Guid, GameObject> RemoteMonster = new Dictionary<Guid, GameObject>();
+    private readonly Dictionary<Guid, GameObject> _remoteMonster = new Dictionary<Guid, GameObject>();
 
-    private IWorld World;
+    private IWorld _world;
 
 
     // Start is called before the first frame update
@@ -43,13 +43,15 @@ public class WorldController : MonoBehaviour
 
     private void CreateLocalWorld()
     {
-        World = new LocalWorld();
-        SpawnPlayer(World.Player.Position);
-        foreach (var remote in World.RemotePlayers) 
+        _world = new LocalWorld();
+        _world.Start();
+
+        SpawnPlayer(_world.Player.Position);
+        foreach (var remote in _world.RemotePlayers) 
         {
             SpawnRemotePlayer(remote.Guid, remote.Position);
         }
-        foreach (var mon in World.Monsters) 
+        foreach (var mon in _world.Monsters) 
         {
             SpawnMonster(mon.Guid, mon.Position);
         }
@@ -57,32 +59,32 @@ public class WorldController : MonoBehaviour
 
     void SpawnPlayer(Vec2 pos) 
     {
-        if (Player != null) 
+        if (_player != null) 
         {
-            Player.transform.SetParent(null);
-            Player = null;
+            _player.transform.SetParent(null);
+            _player = null;
         }
-        Player = Instantiate(PlayerPrefab);
-        Player.transform.SetParent(WorldRoot);
-        Camera.main.transform.SetParent(Player.transform);
+        _player = Instantiate(PlayerPrefab);
+        _player.transform.SetParent(WorldRoot);
+        Camera.main.transform.SetParent(_player.transform);
         
-        UpdatePosition(Player, pos);
+        UpdatePosition(_player, pos);
     }
     void SpawnRemotePlayer(Guid id, Vec2 pos) 
     {
         RemoveRemotePlayer(id);
         var remotePlayerInstance = Instantiate(RemotePlayerPrefab);
-        RemotePlayers.Add(id, remotePlayerInstance);
+        _remotePlayers.Add(id, remotePlayerInstance);
         remotePlayerInstance.transform.SetParent(WorldRoot);
         UpdatePosition(remotePlayerInstance, pos);
     }
 
     void RemoveRemotePlayer(Guid id) 
     {
-        if (RemotePlayers.ContainsKey(id)) 
+        if (_remotePlayers.ContainsKey(id)) 
         {
-            RemotePlayers[id].transform.SetParent(null);
-            RemotePlayers.Remove(id);
+            _remotePlayers[id].transform.SetParent(null);
+            _remotePlayers.Remove(id);
         }
     }
 
@@ -90,17 +92,17 @@ public class WorldController : MonoBehaviour
     {
         RemoveMonster(id);
         var remoteMonsterInstance = Instantiate(MonsterPrefab);
-        RemoteMonster.Add(id, remoteMonsterInstance);
+        _remoteMonster.Add(id, remoteMonsterInstance);
         remoteMonsterInstance.transform.SetParent(WorldRoot);
         UpdatePosition(remoteMonsterInstance, pos);
     }
 
     private void RemoveMonster(Guid id)
     {
-        if (RemoteMonster.ContainsKey(id)) 
+        if (_remoteMonster.ContainsKey(id)) 
         {
-            RemoteMonster[id].transform.SetParent(null);
-            RemoteMonster.Remove(id);
+            _remoteMonster[id].transform.SetParent(null);
+            _remoteMonster.Remove(id);
         }
     }
 
@@ -111,32 +113,32 @@ public class WorldController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        World.Player.Position = new Vec2(Player.transform.position.x, Player.transform.position.z);
-        UpdatePosition(Player, World.Player.Position); // in case the engine disagrees
+        // Update player position in world
+        _world.Player.Position = new Vec2(_player.transform.position.x, _player.transform.position.z);
+        UpdatePosition(_player, _world.Player.Position); // in case the engine disagrees
 
-        foreach (var remote in World.RemotePlayers.Where(p => !RemotePlayers.ContainsKey(p.Guid))) {
+        // Add new remote players
+        foreach (var remote in _world.RemotePlayers.Where(p => !_remotePlayers.ContainsKey(p.Guid)))
             SpawnRemotePlayer(remote.Guid, remote.Position);
-        }
-        foreach (var remote in RemotePlayers.Where(p => World.RemotePlayers.All(q => q.Guid != p.Key))) {
+
+        // Remove old remote player
+        foreach (var remote in _remotePlayers.Where(p => _world.RemotePlayers.All(q => q.Guid != p.Key)))
             RemoveRemotePlayer(remote.Key);
-        }
 
-        foreach (var remote in World.RemotePlayers) 
-        {
-            UpdatePosition(RemotePlayers[remote.Guid], remote.Position);
-        }
+        // Update all remote player positions
+        foreach (var remote in _world.RemotePlayers) 
+            UpdatePosition(_remotePlayers[remote.Guid], remote.Position);
 
-        
-        foreach (var remote in World.Monsters.Where(p => !RemoteMonster.ContainsKey(p.Guid))) {
+        // Add new monsters
+        foreach (var remote in _world.Monsters.Where(p => !_remoteMonster.ContainsKey(p.Guid)))
             SpawnMonster(remote.Guid, remote.Position);
-        }
-        foreach (var remote in RemoteMonster.Where(p => World.Monsters.All(q => q.Guid != p.Key))) {
-            RemoveMonster(remote.Key);
-        }
 
-        foreach (var mon in World.Monsters) 
-        {
-            UpdatePosition(RemoteMonster[mon.Guid], mon.Position);
-        }
+        // Remove old monsters
+        foreach (var remote in _remoteMonster.Where(p => _world.Monsters.All(q => q.Guid != p.Key)))
+            RemoveMonster(remote.Key);
+
+        // Update all monster positions
+        foreach (var mon in _world.Monsters) 
+            UpdatePosition(_remoteMonster[mon.Guid], mon.Position);
     }
 }

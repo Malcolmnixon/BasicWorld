@@ -45,10 +45,11 @@ namespace BasicWorld
             {
                 var monster = new Monster
                 {
+                    Guid = Guid.NewGuid(),
                     Position = new Vec2(
                         (float) (rand.NextDouble() * 40 - 20),
                         (float) (rand.NextDouble() * 40 - 20)),
-                    Speed = (float) ((rand.NextDouble() + 1) / 2)
+                    Speed = (float) (rand.NextDouble()*4 + 1)
                 };
                 Monsters.Add(monster);
             }
@@ -65,10 +66,10 @@ namespace BasicWorld
             while (!_cancel.IsCancellationRequested)
             {
                 // Wait 100ms
-                _cancel.Token.WaitHandle.WaitOne(100);
+                _cancel.Token.WaitHandle.WaitOne(20);
 
                 // Update state
-                State.Tick(0.1f);
+                State.Tick(0.02f);
 
                 // Dispatch update
                 OnUpdate();
