@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BasicWorld
+namespace BasicWorld.WorldData
 {
     public class Actor
     {

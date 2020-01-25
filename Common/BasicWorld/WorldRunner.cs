@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using BasicWorld.WorldData;
 
 namespace BasicWorld
 {
@@ -47,8 +48,8 @@ namespace BasicWorld
                 {
                     Guid = Guid.NewGuid(),
                     Position = new Vec2(
-                        (float) (rand.NextDouble() * 40 - 20),
-                        (float) (rand.NextDouble() * 40 - 20)),
+                        (float) (rand.NextDouble() * 80 - 40),
+                        (float) (rand.NextDouble() * 80 - 40)),
                     Speed = (float) (rand.NextDouble()*4 + 1)
                 };
                 Monsters.Add(monster);
