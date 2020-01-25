@@ -17,7 +17,7 @@ public class WorldController : MonoBehaviour
 
     private GameObject Player;
 
-    private GameObject[] RemotePlayers;
+    private List<GameObject> RemotePlayers;
 
 
     // Start is called before the first frame update
@@ -26,6 +26,12 @@ public class WorldController : MonoBehaviour
         Player = Instantiate(PlayerPrefab);
         Player.transform.SetParent(transform);
         Camera.main.transform.SetParent(Player.transform);
+    }
+
+    void SpawnRemotePlayer() {
+        var remotePlayerInstance = Instantiate(RemotePlayerPrefab);
+        RemotePlayers.Add(remotePlayerInstance);
+        remotePlayerInstance.transform.SetParent(transform);
     }
 
     // Update is called once per frame

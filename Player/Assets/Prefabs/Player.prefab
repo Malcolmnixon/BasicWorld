@@ -107,6 +107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93a500e368d4fc019a11c5c7a2ca4dd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WalkSpeed: 5
 --- !u!54 &1753727147369926874
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -121,5 +122,5 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 80
   m_CollisionDetection: 0
