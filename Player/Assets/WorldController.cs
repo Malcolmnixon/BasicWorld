@@ -5,6 +5,10 @@ using UnityEngine;
 public class WorldController : MonoBehaviour
 {
 
+    [Header("Resources")]
+
+    public Transform WorldRoot;
+    
     [Header("Prefabs")]
     
     [SerializeField]
@@ -24,14 +28,14 @@ public class WorldController : MonoBehaviour
     void Start()
     {
         Player = Instantiate(PlayerPrefab);
-        Player.transform.SetParent(transform);
+        Player.transform.SetParent(WorldRoot);
         Camera.main.transform.SetParent(Player.transform);
     }
 
     void SpawnRemotePlayer() {
         var remotePlayerInstance = Instantiate(RemotePlayerPrefab);
         RemotePlayers.Add(remotePlayerInstance);
-        remotePlayerInstance.transform.SetParent(transform);
+        remotePlayerInstance.transform.SetParent(WorldRoot);
     }
 
     // Update is called once per frame
