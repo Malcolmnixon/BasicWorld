@@ -1,3 +1,4 @@
 .vs/
+/Player/Assets/Libraries/*.dll
 /Common/BasicWorld/bin
 /Common/BasicWorld/obj
