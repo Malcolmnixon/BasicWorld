@@ -1,6 +1,5 @@
 .vs/
-/Player/Assets/Libraries.meta
-/Player/Assets/Libraries/*.dll
-/Player/Assets/Libraries/*.meta
 /Common/BasicWorld/bin
 /Common/BasicWorld/obj
+/Common/BasicWorld.Test/bin
+/Common/BasicWorld.Test/obj

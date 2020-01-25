@@ -11,5 +11,10 @@ namespace BasicWorld
         IList<IRemotePlayer> RemotePlayers { get; }
 
         IList<IMonster> Monsters { get; }
+
+        /// <summary>
+        /// Start the world
+        /// </summary>
+        void Start();
     }
 }
