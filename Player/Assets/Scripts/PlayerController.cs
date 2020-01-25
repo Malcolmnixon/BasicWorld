@@ -34,7 +34,6 @@ public class PlayerController : MonoBehaviour
             z = Input.GetAxis("Vertical");
         }
         
-        Debug.Log($"New {rotate}, {z}");
         rotate = rotate * TurnSpeed * Time.deltaTime;
         z = z * WalkSpeed * Time.deltaTime; 
     }
