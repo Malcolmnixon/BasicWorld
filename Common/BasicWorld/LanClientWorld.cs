@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
-using System.Text;
 using NetComms;
 
 namespace BasicWorld
@@ -23,6 +23,11 @@ namespace BasicWorld
         /// </summary>
         private readonly NetComms.IConnection _communicationsConnection;
 
+        /// <summary>
+        /// World state
+        /// </summary>
+        private WorldState _state = new WorldState();
+
         public LanClientWorld(IPAddress server)
         {
             _server = server;
@@ -33,13 +38,15 @@ namespace BasicWorld
             _communicationsConnection.ConnectionDropped += CommunicationsConnectionOnConnectionDropped;
         }
 
-        public ILocalPlayer Player { get; }
-        public IList<IRemotePlayer> RemotePlayers { get; }
-        public IList<IMonster> Monsters { get; }
+        public Player Player { get; set; }
+
+        public List<Player> RemotePlayers => _state.Players.Where(p => p != Player).ToList();
+
+        public List<Monster> Monsters => _state.Monsters;
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            _communicationsConnection.Dispose();
         }
 
         public void Start()
@@ -49,17 +56,17 @@ namespace BasicWorld
 
         private void CommunicationsConnectionOnConnectionDropped(object sender, ConnectionEventArgs e)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         private void CommunicationsConnectionOnNotification(object sender, NotificationEventArgs e)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         private void CommunicationsConnectionOnTransaction(object sender, TransactionEventArgs e)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

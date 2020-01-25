@@ -9,7 +9,7 @@ namespace BasicWorld.Test
         public void TestCreate()
         {
             using var world = new LocalWorld();
-
+            
             world.Start();
             Assert.AreEqual(5, world.Monsters.Count);
             Assert.AreEqual(0, world.RemotePlayers.Count);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace BasicWorld
 {
@@ -13,13 +14,15 @@ namespace BasicWorld
         }
 
         public float X { get; set; }
+
         public float Y { get; set; }
 
-        public float Length() => (float)Math.Sqrt(X * X + Y * Y);
+        [JsonIgnore]
+        public float Length => (float)Math.Sqrt(X * X + Y * Y);
 
         public Vec2 Normalize()
         {
-            var len = Length();
+            var len = Length;
 
             if (len < 1e-6)
                 return new Vec2(0, 0);

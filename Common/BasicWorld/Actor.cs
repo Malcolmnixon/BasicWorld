@@ -4,8 +4,10 @@ using System.Text;
 
 namespace BasicWorld
 {
-    public interface IRemotePlayer : IActor
+    public class Actor
     {
-        Vec2 Position { get; }
+        public Guid Guid { get; set; }
+
+        public Vec2 Position { get; set; }
     }
 }

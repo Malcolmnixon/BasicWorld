@@ -6,11 +6,11 @@ namespace BasicWorld
 {
     public interface IWorld
     {
-        ILocalPlayer Player { get; }
+        Player Player { get; }
 
-        IList<IRemotePlayer> RemotePlayers { get; }
+        List<Player> RemotePlayers { get; }
 
-        IList<IMonster> Monsters { get; }
+        List<Monster> Monsters { get; }
 
         /// <summary>
         /// Start the world

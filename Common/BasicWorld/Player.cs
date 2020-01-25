@@ -4,8 +4,8 @@ using System.Text;
 
 namespace BasicWorld
 {
-    public interface IMonster : IActor
+    public class Player : Actor
     {
-        Vec2 Position { get; }
+        private float Health { get; set; }
     }
 }
