@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using BasicWorld;
 using System;
+using System.Linq;
 
 public class WorldController : MonoBehaviour
 {
@@ -69,27 +70,38 @@ public class WorldController : MonoBehaviour
     }
     void SpawnRemotePlayer(Guid id, Vec2 pos) 
     {
-        if (RemotePlayers.ContainsKey(id)) 
-        {
-            RemotePlayers[id].transform.SetParent(null);
-            RemotePlayers.Remove(id);
-        }
+        RemoveRemotePlayer(id);
         var remotePlayerInstance = Instantiate(RemotePlayerPrefab);
         RemotePlayers.Add(id, remotePlayerInstance);
         remotePlayerInstance.transform.SetParent(WorldRoot);
         UpdatePosition(remotePlayerInstance, pos);
     }
+
+    void RemoveRemotePlayer(Guid id) 
+    {
+        if (RemotePlayers.ContainsKey(id)) 
+        {
+            RemotePlayers[id].transform.SetParent(null);
+            RemotePlayers.Remove(id);
+        }
+    }
+
     void SpawnMonster(Guid id, Vec2 pos) 
+    {
+        RemoveMonster(id);
+        var remoteMonsterInstance = Instantiate(MonsterPrefab);
+        RemoteMonster.Add(id, remoteMonsterInstance);
+        remoteMonsterInstance.transform.SetParent(WorldRoot);
+        UpdatePosition(remoteMonsterInstance, pos);
+    }
+
+    private void RemoveMonster(Guid id)
     {
         if (RemoteMonster.ContainsKey(id)) 
         {
             RemoteMonster[id].transform.SetParent(null);
             RemoteMonster.Remove(id);
         }
-        var remoteMonsterInstance = Instantiate(MonsterPrefab);
-        RemoteMonster.Add(id, remoteMonsterInstance);
-        remoteMonsterInstance.transform.SetParent(WorldRoot);
-        UpdatePosition(remoteMonsterInstance, pos);
     }
 
     void UpdatePosition(GameObject gameObj, Vec2 pos) {
@@ -101,10 +113,27 @@ public class WorldController : MonoBehaviour
     {
         World.Player.Position = new Vec2(Player.transform.position.x, Player.transform.position.z);
         UpdatePosition(Player, World.Player.Position); // in case the engine disagrees
+
+        foreach (var remote in World.RemotePlayers.Where(p => !RemotePlayers.ContainsKey(p.Guid))) {
+            SpawnRemotePlayer(remote.Guid, remote.Position);
+        }
+        foreach (var remote in RemotePlayers.Where(p => World.RemotePlayers.All(q => q.Guid != p.Key))) {
+            RemoveRemotePlayer(remote.Key);
+        }
+
         foreach (var remote in World.RemotePlayers) 
         {
             UpdatePosition(RemotePlayers[remote.Guid], remote.Position);
         }
+
+        
+        foreach (var remote in World.Monsters.Where(p => !RemoteMonster.ContainsKey(p.Guid))) {
+            SpawnMonster(remote.Guid, remote.Position);
+        }
+        foreach (var remote in RemoteMonster.Where(p => World.Monsters.All(q => q.Guid != p.Key))) {
+            RemoveMonster(remote.Key);
+        }
+
         foreach (var mon in World.Monsters) 
         {
             UpdatePosition(RemoteMonster[mon.Guid], mon.Position);
