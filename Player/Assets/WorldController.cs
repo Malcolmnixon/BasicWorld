@@ -28,9 +28,9 @@ public class WorldController : MonoBehaviour
     private GameObject Player;
 
 
-    private Dictionary<Guid, GameObject> RemotePlayers;
+    private Dictionary<Guid, GameObject> RemotePlayers = new Dictionary<Guid, GameObject>();
 
-    private Dictionary<Guid, GameObject> RemoteMonster;
+    private Dictionary<Guid, GameObject> RemoteMonster = new Dictionary<Guid, GameObject>();
 
     private IWorld World;
 
