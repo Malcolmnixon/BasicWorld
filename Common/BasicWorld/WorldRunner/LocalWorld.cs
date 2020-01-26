@@ -29,7 +29,7 @@ namespace BasicWorld.WorldRunner
                 var players = State.Players;
 
                 // Spawn new monsters (up to 5) about once every 10 seconds
-                if (monsters.Count < 5 && _random.NextDouble() < 0.1 * deltaTime)
+                if (monsters.Count < 5 && _random.NextDouble() < deltaTime / 10)
                 {
                     var monster = new Monster
                     {
@@ -49,22 +49,19 @@ namespace BasicWorld.WorldRunner
                 // Loop through all monsters
                 foreach (var monster in monsters)
                 {
-                    // Find the player the monster has targeted
+                    // Handle switching targets randomly every 20 seconds
+                    if (players.Count != 0 && _random.NextDouble() < deltaTime / 20)
+                    {
+                        monster.Target = players[_random.Next(players.Count)].Guid;
+                    }
+
+                    // If monster has target then run towards it
                     var target = State.Players.FirstOrDefault(p => p.Guid == monster.Target);
                     if (target != null)
                     {
-                        // Run towards player
                         var direction = (target.Position - monster.Position).Normalize();
                         monster.Position += direction * monster.Speed * deltaTime;
-                        continue;
                     }
-
-                    // Skip if no players to target
-                    if (players.Count == 0)
-                        continue;
-
-                    // Pick a new target
-                    monster.Target = players[_random.Next(players.Count)].Guid;
                 }
             }
         }
