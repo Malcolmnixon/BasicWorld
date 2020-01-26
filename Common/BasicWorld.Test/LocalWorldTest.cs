@@ -1,3 +1,4 @@
+using BasicWorld.WorldRunner;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BasicWorld.Test
@@ -9,10 +10,11 @@ namespace BasicWorld.Test
         public void TestCreate()
         {
             using var world = new LocalWorld();
-            
-            world.Start();
-            Assert.AreEqual(5, world.Monsters.Count);
+            var player = world.CreateLocalPlayer();
+
+            Assert.IsNotNull(world.Player);
             Assert.AreEqual(0, world.RemotePlayers.Count);
+            Assert.AreEqual(0, world.Monsters.Count);
         }
     }
 }

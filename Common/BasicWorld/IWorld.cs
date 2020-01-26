@@ -1,21 +1,35 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using BasicWorld.WorldData;
 
 namespace BasicWorld
 {
     public interface IWorld
     {
+        /// <summary>
+        /// Get the current player
+        /// </summary>
         Player Player { get; }
 
-        List<Player> RemotePlayers { get; }
+        /// <summary>
+        /// Get all remote players
+        /// </summary>
+        ReadOnlyCollection<Player> RemotePlayers { get; }
 
-        List<Monster> Monsters { get; }
+        /// <summary>
+        /// Get all monsters
+        /// </summary>
+        ReadOnlyCollection<Monster> Monsters { get; }
 
         /// <summary>
         /// Start the world
         /// </summary>
         void Start();
+
+        /// <summary>
+        /// Create local player
+        /// </summary>
+        /// <returns></returns>
+        Player CreateLocalPlayer();
     }
 }

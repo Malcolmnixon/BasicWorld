@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 
-namespace BasicWorld
+namespace BasicWorld.LanGame
 {
     /// <summary>
     /// LAN server discovery

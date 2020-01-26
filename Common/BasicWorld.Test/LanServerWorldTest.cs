@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading;
+using BasicWorld.LanGame;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BasicWorld.Test
@@ -11,9 +12,9 @@ namespace BasicWorld.Test
         public void TestCreate()
         {
             using var serverWorld = new LanServerWorld();
-
+            var player = serverWorld.CreateLocalPlayer();
             serverWorld.Start();
-            Assert.AreEqual(5, serverWorld.Monsters.Count);
+            Assert.AreEqual(0, serverWorld.Monsters.Count);
             Assert.AreEqual(0, serverWorld.RemotePlayers.Count);
         }
 
@@ -26,6 +27,7 @@ namespace BasicWorld.Test
             using var discovery = new LanServerDiscovery();
             discovery.Start();
 
+            // Wait 5 seconds - server sends discoveries every 3 seconds
             Thread.Sleep(5000);
 
             Assert.IsTrue(discovery.Servers.Count >= 1);
@@ -40,10 +42,12 @@ namespace BasicWorld.Test
             using var discovery = new LanServerDiscovery();
             discovery.Start();
 
+            // Wait 5 seconds - server sends discoveries every 3 seconds
             Thread.Sleep(5000);
 
             Assert.IsTrue(discovery.Servers.Count >= 1);
 
+            // Connect to server
             using var clientWorld = new LanClientWorld(discovery.Servers.First().Item1);
             clientWorld.Start();
         }
@@ -52,11 +56,13 @@ namespace BasicWorld.Test
         public void TestSynchronize()
         {
             using var serverWorld = new LanServerWorld();
+            var player = serverWorld.CreateLocalPlayer();
             serverWorld.Start();
 
             using var discovery = new LanServerDiscovery();
             discovery.Start();
 
+            // Wait 5 seconds - server sends discoveries every 3 seconds
             Thread.Sleep(5000);
 
             Assert.IsTrue(discovery.Servers.Count >= 1);
@@ -64,12 +70,11 @@ namespace BasicWorld.Test
             using var clientWorld = new LanClientWorld(discovery.Servers.First().Item1);
             clientWorld.Start();
 
+            // Wait 1 second for game state to synchronize
             Thread.Sleep(1000);
 
-            Assert.AreEqual(5, serverWorld.Monsters.Count);
-            Assert.AreEqual(1, serverWorld.RemotePlayers.Count);
-            Assert.AreEqual(5, clientWorld.Monsters.Count);
-            Assert.AreEqual(1, clientWorld.RemotePlayers.Count);
+            Assert.AreEqual(1, serverWorld.State.Players.Count);
+            Assert.AreEqual(1, clientWorld.State.Players.Count);
         }
     }
 }

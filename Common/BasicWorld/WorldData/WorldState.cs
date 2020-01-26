@@ -1,39 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace BasicWorld.WorldData
 {
+    /// <summary>
+    /// World state
+    /// </summary>
     public class WorldState
     {
+        /// <summary>
+        /// List of players
+        /// </summary>
         public List<Player> Players { get; set; }
 
+        /// <summary>
+        /// List of monsters
+        /// </summary>
         public List<Monster> Monsters { get; set; }
 
-        public void Tick(float deltaTime)
+        /// <summary>
+        /// Serialize world state to JSON
+        /// </summary>
+        /// <returns>JSON encoded world state</returns>
+        public string ToJson()
         {
-            // Skip if no players or monsters
-            if (Players == null || Players.Count == 0 || Monsters == null || Monsters.Count == 0)
-                return;
+            return JsonConvert.SerializeObject(this);
+        }
 
-            var random = new Random();
-
-            // Loop through all monsters
-            foreach (var monster in Monsters)
-            {
-                // Update the target player
-                var targetPlayer = Players.FirstOrDefault(p => p.Guid == monster.Target);
-                if (targetPlayer == null)
-                {
-                    targetPlayer = Players[random.Next(Players.Count)];
-                    monster.Target = targetPlayer.Guid;
-                }
-
-                // Walk to player
-                var direction = (targetPlayer.Position - monster.Position).Normalize();
-                monster.Position += direction * monster.Speed * deltaTime;
-            }
+        /// <summary>
+        /// Deserialize world state from JSON
+        /// </summary>
+        /// <param name="json">JSON encoded world state</param>
+        /// <returns>New world state</returns>
+        public static WorldState FromJson(string json)
+        {
+            return JsonConvert.DeserializeObject<WorldState>(json);
         }
     }
 }

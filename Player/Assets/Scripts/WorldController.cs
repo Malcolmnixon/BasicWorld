@@ -1,9 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using BasicWorld;
+using BasicWorld.WorldData;
 using System;
 using System.Linq;
+using BasicWorld.WorldRunner;
 
 public class WorldController : MonoBehaviour
 {
@@ -44,6 +45,7 @@ public class WorldController : MonoBehaviour
     private void CreateLocalWorld()
     {
         _world = new LocalWorld();
+        _world.CreateLocalPlayer();
         _world.Start();
 
         SpawnPlayer(_world.Player.Position);
