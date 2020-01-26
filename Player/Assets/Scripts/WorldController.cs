@@ -91,7 +91,7 @@ public class WorldController : MonoBehaviour
     {
         if (_remotePlayers.ContainsKey(id)) 
         {
-            _remotePlayers[id].transform.SetParent(null);
+            Destroy(_remotePlayers[id]);
             _remotePlayers.Remove(id);
         }
     }
@@ -109,7 +109,7 @@ public class WorldController : MonoBehaviour
     {
         if (_remoteMonster.ContainsKey(id)) 
         {
-            _remoteMonster[id].transform.SetParent(null);
+            Destroy(_remoteMonster[id]);
             _remoteMonster.Remove(id);
         }
     }
