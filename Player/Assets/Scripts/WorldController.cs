@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Net;
 using BasicWorld.LanGame;
+using BasicWorld.WebGame;
 using BasicWorld.WorldRunner;
 
 public class WorldController : MonoBehaviour
@@ -49,6 +50,7 @@ public class WorldController : MonoBehaviour
         _world = new LocalWorld();
         //_world = new LanServerWorld();
         //_world = new LanClientWorld(IPAddress.Loopback);
+        _world = new WebClientWorld();
         _world.CreateLocalPlayer();
         _world.Start();
 
