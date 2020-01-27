@@ -7,7 +7,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody _playerBody;    
-    private float WalkSpeed = 40f;
+    private float WalkSpeed = 20f;
     private float TurnSpeed = 180f;
 
     private float _rotate;

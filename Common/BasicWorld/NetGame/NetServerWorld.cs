@@ -61,9 +61,9 @@ namespace BasicWorld.NetGame
         {
             base.Tick(deltaTime);
 
-            // Only send world state every 0.3 seconds
+            // Only send world state every 0.1 seconds
             _worldStateAge += deltaTime;
-            if (_worldStateAge < 0.3f)
+            if (_worldStateAge < 0.1f)
                 return;
 
             // Send world state to all clients

@@ -63,9 +63,9 @@ namespace BasicWorld.NetGame
             if (Player == null)
                 return;
 
-            // Don't send player state if we sent less than 0.3 seconds ago
+            // Don't send player state if we sent less than 0.1 seconds ago
             _playerStateAge += deltaTime;
-            if (_playerStateAge < 0.3f)
+            if (_playerStateAge < 0.1f)
                 return;
 
             // Encode local player to JSON
