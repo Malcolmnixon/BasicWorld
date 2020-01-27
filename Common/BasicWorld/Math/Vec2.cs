@@ -18,6 +18,17 @@ namespace BasicWorld.Math
         public float Y;
 
         /// <summary>
+        /// Initializes a new instance of the Vec2 class
+        /// </summary>
+        /// <param name="x">X value</param>
+        /// <param name="y">Y value</param>
+        public Vec2(float x, float y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        /// <summary>
         /// Gets the magnitude of this vector
         /// </summary>
         [JsonIgnore]

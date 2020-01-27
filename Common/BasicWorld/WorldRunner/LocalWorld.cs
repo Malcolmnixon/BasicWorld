@@ -61,7 +61,8 @@ namespace BasicWorld.WorldRunner
                     if (target != null)
                     {
                         var direction = (target.Position - monster.Position).Normalize();
-                        monster.Position += direction * monster.Speed * deltaTime;
+                        monster.Velocity = direction * monster.Speed;
+                        monster.Position += monster.Velocity * deltaTime;
                     }
                 }
             }
