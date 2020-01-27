@@ -124,11 +124,13 @@ public class WorldController : MonoBehaviour
         // Update player position in world
         _world.Player.Position = _playerController.Position;
         _world.Player.Velocity = _playerController.Velocity;
-        UpdatePosition(_player, _world.Player.Position); // in case the engine disagrees
+
+        // Force a world update
+        _world.Update();
 
         // Add new remote players
         foreach (var remote in _world.RemotePlayers.Where(p => !_remotePlayers.ContainsKey(p.Guid)))
-            SpawnRemotePlayer(remote.Guid, remote.SmoothPosition);
+            SpawnRemotePlayer(remote.Guid, remote.Position);
 
         // Remove old remote player
         foreach (var remote in _remotePlayers.Where(p => _world.RemotePlayers.All(q => q.Guid != p.Key)))
@@ -136,11 +138,11 @@ public class WorldController : MonoBehaviour
 
         // Update all remote player positions
         foreach (var remote in _world.RemotePlayers) 
-            UpdatePosition(_remotePlayers[remote.Guid], remote.SmoothPosition);
+            UpdatePosition(_remotePlayers[remote.Guid], remote.Position);
 
         // Add new monsters
         foreach (var remote in _world.Monsters.Where(p => !_remoteMonster.ContainsKey(p.Guid)))
-            SpawnMonster(remote.Guid, remote.SmoothPosition);
+            SpawnMonster(remote.Guid, remote.Position);
 
         // Remove old monsters
         foreach (var remote in _remoteMonster.Where(p => _world.Monsters.All(q => q.Guid != p.Key)))
@@ -148,6 +150,6 @@ public class WorldController : MonoBehaviour
 
         // Update all monster positions
         foreach (var mon in _world.Monsters) 
-            UpdatePosition(_remoteMonster[mon.Guid], mon.SmoothPosition);
+            UpdatePosition(_remoteMonster[mon.Guid], mon.Position);
     }
 }

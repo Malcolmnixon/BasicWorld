@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using BasicWorld.Math;
 using BasicWorld.WorldData;
@@ -27,6 +26,10 @@ namespace BasicWorld.WorldRunner
         {
             var monsters = State.Monsters;
             var players = State.Players;
+
+            // Just update all players based on their last known velocity
+            foreach (var player in players)
+                player.Position += player.Velocity * deltaTime;
 
             // Spawn new monsters (up to 5) about once every 10 seconds
             if (monsters.Count < 5 && _random.NextDouble() < deltaTime / 10)

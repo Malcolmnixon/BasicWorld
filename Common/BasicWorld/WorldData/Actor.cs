@@ -20,11 +20,5 @@ namespace BasicWorld.WorldData
         /// Actor velocity
         /// </summary>
         public Vec2 Velocity { get; set; }
-
-        /// <summary>
-        /// Actor smooth-position (interpolated locally)
-        /// </summary>
-        [JsonIgnore]
-        public Vec2 SmoothPosition { get; set; }
     }
 }
