@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using BasicWorld.Math;
 using BasicWorld.WorldData;
@@ -24,47 +25,49 @@ namespace BasicWorld.WorldRunner
 
         protected override void Tick(float deltaTime)
         {
-            lock (WorldLock)
+            var monsters = State.Monsters;
+            var players = State.Players;
+
+            // Spawn new monsters (up to 5) about once every 10 seconds
+            if (monsters.Count < 5 && _random.NextDouble() < deltaTime / 10)
             {
-                var monsters = State.Monsters;
-                var players = State.Players;
-
-                // Spawn new monsters (up to 5) about once every 10 seconds
-                if (monsters.Count < 5 && _random.NextDouble() < deltaTime / 10)
+                var monster = new Monster
                 {
-                    var monster = new Monster
+                    Guid = Guid.NewGuid(),
+                    Position = new Vec2
                     {
-                        Guid = Guid.NewGuid(),
-                        Position = new Vec2
-                        {
-                            X = (float) (_random.NextDouble() * 100 - 50),
-                            Y = (float) (_random.NextDouble() * 100 - 50)
-                        },
-                        Speed = (float) (_random.NextDouble() * 2 + 1)
-                    };
+                        X = (float)(_random.NextDouble() * 100 - 50),
+                        Y = (float)(_random.NextDouble() * 100 - 50)
+                    },
+                    Speed = (float)(_random.NextDouble() * 2 + 1)
+                };
 
-                    // Add to monsters
-                    monsters.Add(monster);
+                // Add to monsters
+                monsters.Add(monster);
+            }
+
+            // Loop through all monsters
+            foreach (var monster in monsters)
+            {
+                // Handle switching targets randomly every 20 seconds
+                if (players.Count != 0 && _random.NextDouble() < deltaTime / 20)
+                {
+                    monster.Target = players[_random.Next(players.Count)].Guid;
                 }
 
-                // Loop through all monsters
-                foreach (var monster in monsters)
+                // Test if monster has a target
+                var target = State.Players.FirstOrDefault(p => p.Guid == monster.Target);
+                if (target == null)
                 {
-                    // Handle switching targets randomly every 20 seconds
-                    if (players.Count != 0 && _random.NextDouble() < deltaTime / 20)
-                    {
-                        monster.Target = players[_random.Next(players.Count)].Guid;
-                    }
-
-                    // If monster has target then run towards it
-                    var target = State.Players.FirstOrDefault(p => p.Guid == monster.Target);
-                    if (target != null)
-                    {
-                        var direction = (target.Position - monster.Position).Normalize();
-                        monster.Velocity = direction * monster.Speed;
-                        monster.Position += monster.Velocity * deltaTime;
-                    }
+                    // No target, clear velocity
+                    monster.Velocity = new Vec2();
+                    continue;
                 }
+
+                // Set monster moving towards target
+                var direction = (target.Position - monster.Position).Normalize();
+                monster.Velocity = direction * monster.Speed;
+                monster.Position += monster.Velocity * deltaTime;
             }
         }
     }

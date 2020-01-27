@@ -27,6 +27,11 @@ namespace BasicWorld
         void Start();
 
         /// <summary>
+        /// Update the world
+        /// </summary>
+        void Update();
+
+        /// <summary>
         /// Create local player
         /// </summary>
         /// <returns></returns>

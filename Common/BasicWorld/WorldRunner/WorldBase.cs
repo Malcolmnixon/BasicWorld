@@ -24,9 +24,19 @@ namespace BasicWorld.WorldRunner
         private readonly CancellationTokenSource _cancel = new CancellationTokenSource();
 
         /// <summary>
+        /// Stopwatch for time measurement
+        /// </summary>
+        private readonly Stopwatch _time = Stopwatch.StartNew();
+
+        /// <summary>
         /// World update thread
         /// </summary>
         private readonly Thread _thread;
+
+        /// <summary>
+        /// Last update in milliseconds
+        /// </summary>
+        private long _lastUpdate;
 
         /// <summary>
         /// Constructor
@@ -79,7 +89,15 @@ namespace BasicWorld.WorldRunner
         /// </summary>
         public virtual void Start()
         {
+            _time.Restart();
+            _lastUpdate = 0;
             _thread.Start();
+        }
+
+        public virtual void Update()
+        {
+            // Fire the tick function
+            FireTick();
         }
 
         /// <summary>
@@ -103,9 +121,22 @@ namespace BasicWorld.WorldRunner
         /// <summary>
         /// Handle world ticks
         /// </summary>
-        /// <param name="deltaTime">Time since last tick</param>
         protected virtual void Tick(float deltaTime)
         {
+        }
+
+        private void FireTick()
+        {
+            lock (WorldLock)
+            {
+                // Track time
+                var now = _time.ElapsedMilliseconds;
+                var deltaTime = (now - _lastUpdate) * 0.001f;
+                _lastUpdate = now;
+
+                // Fire the tick function with the delta-time and the world locked for update
+                Tick(deltaTime);
+            }
         }
 
         /// <summary>
@@ -113,29 +144,14 @@ namespace BasicWorld.WorldRunner
         /// </summary>
         private void ThreadProc()
         {
-            // Start a timer
-            var sw = Stopwatch.StartNew();
-
-            // Get the last service-time in milliseconds
-            var lastMs = sw.ElapsedMilliseconds;
-
             // Loop until asked to cancel
             while (!_cancel.IsCancellationRequested)
             {
                 // Wait for around 50ms
                 _cancel.Token.WaitHandle.WaitOne(50);
 
-                // Get the current service-time in milliseconds
-                var nowMs = sw.ElapsedMilliseconds;
-
-                // Calculate how much time has elapsed
-                var deltaTime = (nowMs - lastMs) * 0.001f;
-
-                // Tick the world with the elapsed time
-                Tick(deltaTime);
-
-                // Save the last service time
-                lastMs = nowMs;
+                // Fire the tick function
+                FireTick();
             }
         }
     }

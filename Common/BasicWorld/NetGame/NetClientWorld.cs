@@ -52,18 +52,7 @@ namespace BasicWorld.NetGame
             var json = Encoding.ASCII.GetString(e.Notification);
             var state = JsonConvert.DeserializeObject<WorldState>(json);
 
-            // TODO: Resolve differences in local and remote state of our player
-            if (Player != null)
-            {
-                state.Players.RemoveAll(p => p.Guid == Player.Guid);
-                state.Players.Add(Player);
-            }
-
-            // Update to the new state
-            lock (WorldLock)
-            {
-                State = state;
-            }
+            UpdateWorld(state);
         }
 
         protected override void Tick(float deltaTime)
