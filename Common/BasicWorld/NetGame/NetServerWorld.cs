@@ -29,7 +29,8 @@ namespace BasicWorld.NetGame
 
         public NetServerWorld()
         {
-            var provider = new NetComms.Tcp.TcpProvider(49524);
+            //var provider = new NetComms.Tcp.TcpProvider(49524);
+            var provider = new NetComms.Udp.UdpProvider(49524);
             _communicationsServer = provider.CreateServer();
             _communicationsServer.ConnectionDropped += OnClientConnectionDropped;
             _communicationsServer.Notification += OnClientNotification;

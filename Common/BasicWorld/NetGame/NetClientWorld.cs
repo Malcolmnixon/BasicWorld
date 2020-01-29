@@ -23,7 +23,8 @@ namespace BasicWorld.NetGame
 
         public NetClientWorld(IPAddress server)
         {
-            var provider = new NetComms.Tcp.TcpProvider(49524);
+            //var provider = new NetComms.Tcp.TcpProvider(49524);
+            var provider = new NetComms.Udp.UdpProvider(49524);
             _communicationsConnection = provider.CreateClient(server);
             _communicationsConnection.Notification += OnServerNotification;
             _communicationsConnection.ConnectionDropped += OnServerConnectionDropped;
