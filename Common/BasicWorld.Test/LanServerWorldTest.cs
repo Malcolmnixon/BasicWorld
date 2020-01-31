@@ -56,7 +56,6 @@ namespace BasicWorld.Test
         public void TestSynchronize()
         {
             using var serverWorld = new LanServerWorld();
-            var player = serverWorld.CreateLocalPlayer();
             serverWorld.Start();
 
             using var discovery = new LanServerDiscovery();
@@ -68,6 +67,7 @@ namespace BasicWorld.Test
             Assert.IsTrue(discovery.Servers.Count >= 1);
 
             using var clientWorld = new LanClientWorld(discovery.Servers.First().Item1);
+            var player = clientWorld.CreateLocalPlayer();
             clientWorld.Start();
 
             // Wait 1 second for game state to synchronize

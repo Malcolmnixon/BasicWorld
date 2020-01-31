@@ -18,11 +18,6 @@ namespace BasicWorld.NetGame
         private readonly NetComms.IServer _communicationsServer;
 
         /// <summary>
-        /// Dictionary of connections to the player GUID
-        /// </summary>
-        private readonly Dictionary<NetComms.IConnection, Guid> _playersByConnection = new Dictionary<NetComms.IConnection, Guid>();
-
-        /// <summary>
         /// Age of the world state
         /// </summary>
         private float _worldStateAge;
@@ -75,58 +70,44 @@ namespace BasicWorld.NetGame
 
         private void OnClientNotification(object sender, NetComms.NotificationEventArgs e)
         {
-            // This should be a network player giving their information
-            var json = Encoding.ASCII.GetString(e.Notification);
-            var player = JsonConvert.DeserializeObject<Player>(json);
-
-            // Lock while integrating player
-            lock (WorldLock)
+            try
             {
-                // Process connection information
-                if (!_playersByConnection.TryGetValue(e.Connection, out var lastGuid))
-                {
-                    // Connection has no associated player. Add this player
-                    _playersByConnection[e.Connection] = player.Guid;
+                // This should be a network player giving their information
+                var json = Encoding.ASCII.GetString(e.Notification);
+                var player = JsonConvert.DeserializeObject<Player>(json);
 
-                    // Add the player to the game
+                // Get the connection player-Guid
+                var oldGuid = (Guid?) e.Connection.AssociatedData ?? Guid.Empty;
+
+                // Lock while integrating player
+                lock (WorldLock)
+                {
+                    // Remove the player with the previous Guid
+                    State.Players.RemoveAll(p => p.Guid == oldGuid);
+
+                    // Add the new player
                     State.Players.Add(player);
-                }
-                else if (lastGuid != player.Guid)
-                {
-                    // Player has changed. Update player associated with connection
-                    _playersByConnection[e.Connection] = player.Guid;
 
-                    // Remove the old player
-                    State.Players.RemoveAll(p => p.Guid == lastGuid);
-                    State.Players.Add(player);
+                    // Save the GUID if the most recently populated player
+                    e.Connection.AssociatedData = player.Guid;
                 }
-                else
-                {
-                    // Save updated player information
-                    var idx = State.Players.FindIndex(p => p.Guid == player.Guid);
-                    if (idx < 0)
-                        throw new Exception("Player collection inconsistent");
-
-                    // Update player
-                    State.Players[idx] = player;
-                }
+            }
+            catch
+            {
+                // Ignore all errors as we don't want the server to fail when given junk
             }
         }
 
         private void OnClientConnectionDropped(object sender, NetComms.ConnectionEventArgs e)
         {
+            // Get the connection player-Guid
+            var oldGuid = (Guid?)e.Connection.AssociatedData ?? Guid.Empty;
+
             // Lock while updating game state
             lock (WorldLock)
             {
-                // If the connection had no associated player then we're done
-                if (!_playersByConnection.TryGetValue(e.Connection, out var guid))
-                    return;
-
-                // Remove the player from the dictionary
-                _playersByConnection.Remove(e.Connection);
-
                 // Remove the player from the game state
-                State.Players.RemoveAll(p => p.Guid == guid);
+                State.Players.RemoveAll(p => p.Guid == oldGuid);
             }
         }
     }
