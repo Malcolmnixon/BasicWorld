@@ -29,6 +29,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Monster
       objectReference: {fileID: 0}
+    - target: {fileID: 1753727147369926874, guid: 8a01ac57f490063ffae2168660c22a89,
+        type: 3}
+      propertyPath: m_UseGravity
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5695228504985441797, guid: 8a01ac57f490063ffae2168660c22a89,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -82,6 +87,11 @@ PrefabInstance:
     - target: {fileID: 5695228504985441797, guid: 8a01ac57f490063ffae2168660c22a89,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8042256037220719890, guid: 8a01ac57f490063ffae2168660c22a89,
+        type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:

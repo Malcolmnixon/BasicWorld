@@ -6,6 +6,7 @@ using System.Linq;
 using BasicWorld.LanGame;
 using BasicWorld.Math;
 using BasicWorld.WebGame;
+using BasicWorld.WorldData;
 using BasicWorld.WorldRunner;
 
 public class WorldController : MonoBehaviour
@@ -54,18 +55,18 @@ public class WorldController : MonoBehaviour
         _world.CreateLocalPlayer();
         _world.Start();
 
-        SpawnPlayer(_world.Player.Position);
+        SpawnPlayer(_world.Player);
         foreach (var remote in _world.RemotePlayers) 
         {
-            SpawnRemotePlayer(remote.Guid, remote.Position);
+            SpawnRemotePlayer(remote);
         }
         foreach (var mon in _world.Monsters) 
         {
-            SpawnMonster(mon.Guid, mon.Position);
+            SpawnMonster(mon);
         }
     }
 
-    void SpawnPlayer(Vec2 pos) 
+    void SpawnPlayer(Actor actor) 
     {
         // Destroy old player
         if (_player != null) 
@@ -75,16 +76,17 @@ public class WorldController : MonoBehaviour
         _playerController = _player.GetComponent<PlayerController>();
         _player.transform.SetParent(WorldRoot);
         Camera.main.transform.SetParent(_player.transform);
-
-        UpdatePosition(_player, pos);
+        UpdatePosition(_player, actor);
+        _player.transform.position += Vector3.up * 2;
     }
-    void SpawnRemotePlayer(Guid id, Vec2 pos) 
+
+    void SpawnRemotePlayer(Actor actor) 
     {
-        RemoveRemotePlayer(id);
+        RemoveRemotePlayer(actor.Guid);
         var remotePlayerInstance = Instantiate(RemotePlayerPrefab);
-        _remotePlayers.Add(id, remotePlayerInstance);
+        _remotePlayers.Add(actor.Guid, remotePlayerInstance);
         remotePlayerInstance.transform.SetParent(WorldRoot);
-        UpdatePosition(remotePlayerInstance, pos);
+        UpdatePosition(remotePlayerInstance, actor);
     }
 
     void RemoveRemotePlayer(Guid id) 
@@ -96,13 +98,13 @@ public class WorldController : MonoBehaviour
         }
     }
 
-    void SpawnMonster(Guid id, Vec2 pos) 
+    void SpawnMonster(Actor actor) 
     {
-        RemoveMonster(id);
+        RemoveMonster(actor.Guid);
         var remoteMonsterInstance = Instantiate(MonsterPrefab);
-        _remoteMonster.Add(id, remoteMonsterInstance);
+        _remoteMonster.Add(actor.Guid, remoteMonsterInstance);
         remoteMonsterInstance.transform.SetParent(WorldRoot);
-        UpdatePosition(remoteMonsterInstance, pos);
+        UpdatePosition(remoteMonsterInstance, actor);
     }
 
     private void RemoveMonster(Guid id)
@@ -114,8 +116,9 @@ public class WorldController : MonoBehaviour
         }
     }
 
-    void UpdatePosition(GameObject gameObj, Vec2 pos) {
-        gameObj.transform.position = new Vector3(pos.X, 0, pos.Y);
+    void UpdatePosition(GameObject gameObj, Actor actor) {
+        gameObj.transform.position = new Vector3(actor.Position.X, gameObj.transform.position.y, actor.Position.Y);
+        gameObj.transform.rotation = Quaternion.Euler(0, actor.Rotation, 0);
     }
 
     // Update is called once per frame
@@ -124,32 +127,33 @@ public class WorldController : MonoBehaviour
         // Update player position in world
         _world.Player.Position = _playerController.Position;
         _world.Player.Velocity = _playerController.Velocity;
+        _world.Player.Rotation = _playerController.Rotation;
 
         // Force a world update
         _world.Update();
 
         // Add new remote players
         foreach (var remote in _world.RemotePlayers.Where(p => !_remotePlayers.ContainsKey(p.Guid)))
-            SpawnRemotePlayer(remote.Guid, remote.Position);
+            SpawnRemotePlayer(remote);
 
         // Remove old remote player
-        foreach (var remote in _remotePlayers.Where(p => _world.RemotePlayers.All(q => q.Guid != p.Key)))
+        foreach (var remote in _remotePlayers.Where(p => _world.RemotePlayers.All(q => q.Guid != p.Key)).ToList())
             RemoveRemotePlayer(remote.Key);
 
         // Update all remote player positions
-        foreach (var remote in _world.RemotePlayers) 
-            UpdatePosition(_remotePlayers[remote.Guid], remote.Position);
+        foreach (var remote in _world.RemotePlayers)
+            UpdatePosition(_remotePlayers[remote.Guid], remote);
 
         // Add new monsters
         foreach (var remote in _world.Monsters.Where(p => !_remoteMonster.ContainsKey(p.Guid)))
-            SpawnMonster(remote.Guid, remote.Position);
+            SpawnMonster(remote);
 
         // Remove old monsters
-        foreach (var remote in _remoteMonster.Where(p => _world.Monsters.All(q => q.Guid != p.Key)))
+        foreach (var remote in _remoteMonster.Where(p => _world.Monsters.All(q => q.Guid != p.Key)).ToList())
             RemoveMonster(remote.Key);
 
         // Update all monster positions
         foreach (var mon in _world.Monsters) 
-            UpdatePosition(_remoteMonster[mon.Guid], mon.Position);
+            UpdatePosition(_remoteMonster[mon.Guid], mon);
     }
 }

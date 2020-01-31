@@ -20,5 +20,10 @@ namespace BasicWorld.WorldData
         /// Actor velocity
         /// </summary>
         public Vec2 Velocity { get; set; }
+
+        /// <summary>
+        /// Actor rotation
+        /// </summary>
+        public float Rotation { get; set; }
     }
 }

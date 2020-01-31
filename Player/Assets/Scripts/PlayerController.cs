@@ -13,13 +13,17 @@ public class PlayerController : MonoBehaviour
     private float _rotate;
     private float _walk;
 
+    private Vector3 _lastPosition;
+
     public Vec2 Position;
     public Vec2 Velocity;
+    public float Rotation;
 
     // Start is called before the first frame update
     void Start()
     {
         _playerBody = GetComponent<Rigidbody>();
+        _lastPosition = transform.position;
     }
 
     void Update()
@@ -47,15 +51,22 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     private void FixedUpdate()
     {
-        // Move player
-        transform.Rotate(0, _rotate * Time.fixedDeltaTime, 0);
-        transform.Translate(new Vector3 (0, 0, _walk * Time.fixedDeltaTime));
+        // Perform position and velocity update
+        var pos = transform.position;
+        var vel = (pos - _lastPosition) / Time.fixedDeltaTime;
+        _lastPosition = pos;
 
-        // Update position
-        Position = new Vec2(transform.position.x, transform.position.z);
-
-        // Update velocity
-        var vel = transform.TransformVector(0, 0, _walk);
+        // Update visible state
+        Position = new Vec2(pos.x, pos.z);
         Velocity = new Vec2(vel.x, vel.z);
+        Rotation = transform.rotation.eulerAngles.y;
+
+        // Calculate requested movement
+        var rot = transform.rotation * Quaternion.Euler(0, _rotate * Time.fixedDeltaTime, 0);
+        var mov = transform.TransformVector(new Vector3(0, 0, _walk * Time.fixedDeltaTime));
+
+        // Request rotate and move of player
+        _playerBody.MoveRotation(rot);
+        _playerBody.MovePosition(transform.position + mov);
     }
 }
